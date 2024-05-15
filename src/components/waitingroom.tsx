@@ -9,6 +9,7 @@ const waitingroom = () => {
       onSubmit={(e) => {
         e.preventDefault();
         // joinChatRoom(username, chatroom);
+        //https://www.youtube.com/watch?v=pvi_ZS_PrSc
       }}
     >
       <Row>
