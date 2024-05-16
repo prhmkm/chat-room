@@ -1,19 +1,23 @@
 import React, { useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 
-const waitingroom = () => {
+interface Props {
+  joinChatRoom: (username: string, chatroom: string) => void;
+}
+
+const waitingroom = ({ joinChatRoom }: Props) => {
   const [username, setUsername] = useState("");
   const [chatroom, setChatroom] = useState("");
   return (
     <Form
       onSubmit={(e) => {
         e.preventDefault();
-        // joinChatRoom(username, chatroom);
+        joinChatRoom(username, chatroom);
         //https://www.youtube.com/watch?v=pvi_ZS_PrSc
       }}
     >
-      <Row>
-        <Col>
+      <Row className="px-5 py-5">
+        <Col sm={12}>
           <Form.Group>
             <Form.Control
               placeholder="UserName"
@@ -24,6 +28,12 @@ const waitingroom = () => {
               onChange={(e) => setChatroom(e.target.value)}
             ></Form.Control>
           </Form.Group>
+        </Col>
+        <Col sm={12}>
+          <hr />
+          <Button variant="success" type="submit">
+            Join
+          </Button>
         </Col>
       </Row>
     </Form>
