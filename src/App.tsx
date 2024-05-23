@@ -1,15 +1,15 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Waitingroom from "./components/waitingroom";
+import Waitingroom from "./components/Waitingroom";
 import { useState } from "react";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import ChatRoom from "./components/ChatRoom";
+import SendMessage from "./components/SendMessage";
 
 function App() {
   const [conn, setConnection] = useState<any>();
-  //const [_chatRoom,_setChatRoom] = useState("");
-  const [_message,_setMessage] = useState("");
-
+  const [_messages, setMessages] = useState([{ user: "", msg: "" }]);
 
   const joinChatRoom = async (username: string, chatroom: string) => {
     try {
@@ -17,34 +17,32 @@ function App() {
         .withUrl("https://localhost:7168/Chat")
         .configureLogging(LogLevel.Information)
         .build();
-
+      //debugger;
       conn.on("JoinToChatRoom", (user, msg) => {
-        console.log("msg : ", msg);
+        setMessages((_messages) => [..._messages, { user, msg }]);
       });
+
+      // conn.on("SendMessage", (user, msg) => {
+      //   setMessages((_messages) => [..._messages, { user, msg }]);
+      // });
 
       await conn.start();
       await conn.invoke("JoinToChatRoom", { username, chatroom });
+      // await conn.invoke("SendMessage", "salam");
 
       setConnection(conn);
     } catch (e) {
       console.log(e);
     }
   };
-  const SendMessageToGroup = async (_message: string) => {
-    try {
-      const conn = new HubConnectionBuilder()
-        .withUrl("https://localhost:7168/Chat")
-        .configureLogging(LogLevel.Information)
-        .build();
 
-      conn.on("SendMessageToGroup", (user, msg) => {
-        console.log("msg : ", msg);
+  const sendMessageToGroup = async (message: string) => {
+    try {
+      conn.on("SendMessage", (user: string, msg: string) => {
+        setMessages((_messages) => [..._messages, { user, msg }]);
       });
 
-      await conn.start();
-      await conn.invoke("JoinToChatRoom", { username, chatroom });
-
-      setConnection(conn);
+      await conn.invoke("SendMessage", message);
     } catch (e) {
       console.log(e);
     }
@@ -59,31 +57,14 @@ function App() {
               <h1>Welcome to GWM chatroom</h1>
             </Col>
           </Row>
-          <Waitingroom joinChatRoom={joinChatRoom}></Waitingroom>
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        SendMessageToGroup(_message);
-        //https://www.youtube.com/watch?v=pvi_ZS_PrSc
-      }}
-    >
-      <Row className="px-5 py-5">
-        <Col sm={12}>
-          <Form.Group>
-            <Form.Control
-              placeholder="Message"
-              onChange={(e) => _setMessage(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-        </Col>
-        <Col sm={12}>
-          <hr />
-          <Button variant="success" type="submit">
-            Join
-          </Button>
-        </Col>
-      </Row>
-    </Form>
+          {!conn ? (
+            <Waitingroom joinChatRoom={joinChatRoom}></Waitingroom>
+          ) : (
+            <ChatRoom
+              messages={_messages}
+              sendMessageToGroup={sendMessageToGroup}
+            ></ChatRoom>
+          )}
         </Container>
       </div>
     </>
