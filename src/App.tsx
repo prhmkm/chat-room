@@ -14,7 +14,7 @@ function App() {
   const joinChatRoom = async (username: string, chatroom: string) => {
     try {
       const conn = new HubConnectionBuilder()
-        .withUrl("https://localhost:7168/Chat")
+        .withUrl("http://10.100.18.21:1020/Chat")
         .configureLogging(LogLevel.Information)
         .build();
       //debugger;
@@ -28,6 +28,10 @@ function App() {
 
       await conn.start();
       await conn.invoke("JoinToChatRoom", { username, chatroom });
+
+      conn.on("SendMessage", (user: string, msg: string) => {
+        setMessages((_messages) => [..._messages, { user, msg }]);
+      });
       // await conn.invoke("SendMessage", "salam");
 
       setConnection(conn);
@@ -38,10 +42,6 @@ function App() {
 
   const sendMessageToGroup = async (message: string) => {
     try {
-      conn.on("SendMessage", (user: string, msg: string) => {
-        setMessages((_messages) => [..._messages, { user, msg }]);
-      });
-
       await conn.invoke("SendMessage", message);
     } catch (e) {
       console.log(e);
