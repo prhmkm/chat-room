@@ -20,6 +20,7 @@ const SendMessage = ({ sendMessageToGroup }: Props) => {
         <Col sm={12}>
           <Form.Group>
             <Form.Control
+              value={message}
               placeholder="Your Message"
               onChange={(e) => setMessage(e.target.value)}
             ></Form.Control>

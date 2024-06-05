@@ -1,7 +1,7 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Waitingroom from "./components/Waitingroom";
+import Waitingroom from "./components/waitingroom";
 import { useState } from "react";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import ChatRoom from "./components/ChatRoom";
@@ -14,7 +14,7 @@ function App() {
   const joinChatRoom = async (username: string, chatroom: string) => {
     try {
       const conn = new HubConnectionBuilder()
-        .withUrl("http://10.100.18.21:1020/Chat")
+        .withUrl("https://localhost:44355/Chat")
         .configureLogging(LogLevel.Information)
         .build();
       //debugger;
